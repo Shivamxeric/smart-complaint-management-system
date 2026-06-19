@@ -15,8 +15,9 @@ export default function Home() {
     }
 
     fetch("https://auth-ye7t.onrender.com/home/", {
-      method: "GET",
-      headers: {
+      // fetch("http://127.0.0.1:8000/home/", {
+        method: "GET",
+        headers: {
         Authorization: `Bearer ${token}`,
       },
     })

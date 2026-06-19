@@ -2,6 +2,8 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import Auth
 import json
+from google.oauth2 import id_token
+from google.auth.transport import requests
 
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 
@@ -143,4 +145,50 @@ def home(request):
         return JsonResponse({
             "status": "failed",
             "message": "Invalid token"
+        })
+
+
+# ================= GOOGLE LOGIN =================
+@csrf_exempt
+def google_login(request):
+    try:
+        data = json.loads(request.body)
+
+        credential = data.get("credential")
+
+        if not credential:
+            return JsonResponse({
+                "status": "failed",
+                "message": "No credential received"
+            })
+
+        google_user = id_token.verify_oauth2_token(
+            credential,
+            requests.Request(),
+            "805589625883-8u3l4b4voh2jsqqqctginjjohgq2pkmf.apps.googleusercontent.com"
+        )
+
+        email = google_user["email"]
+        name = google_user.get("name", email.split("@")[0])
+
+        user, created = Auth.objects.get_or_create(
+            email=email,
+            defaults={
+                "username": name,
+                "password": "google_auth"
+            }
+        )
+
+        refresh = RefreshToken.for_user(user)
+
+        return JsonResponse({
+            "status": "success",
+            "token": str(refresh.access_token),
+            "username": user.username
+        })
+
+    except Exception as e:
+        return JsonResponse({
+            "status": "failed",
+            "message": str(e)
         })
