@@ -1,12 +1,18 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import "./style.css";
+
+import ComplaintForm from "../components/complaints/ComplaintForm";
+
 
 export default function Home() {
+
   const navigate = useNavigate();
+
   const [user, setUser] = useState("");
 
+
   useEffect(() => {
+
     const token = localStorage.getItem("token");
 
     if (!token) {
@@ -15,40 +21,64 @@ export default function Home() {
     }
 
     fetch("https://auth-ye7t.onrender.com/home/", {
-      // fetch("http://127.0.0.1:8000/home/", {
-        method: "GET",
-        headers: {
+      method: "GET",
+
+      headers: {
         Authorization: `Bearer ${token}`,
       },
     })
-      .then(res => res.json())
-      .then(data => {
+
+      .then((res) => res.json())
+
+      .then((data) => {
+
         if (data.status !== "success") {
+
           localStorage.removeItem("token");
+
           navigate("/");
+
         } else {
+
           setUser(data.message);
+
         }
+
       })
+
       .catch(() => {
+
         navigate("/");
+
       });
 
-  }, []);
+  }, [navigate]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/");
-  };
 
   return (
-    <div className="bg">
-      <div className="card home">
-        <h1>Welcome 🎉</h1>
-        <p>{user}</p>
 
-        <button onClick={handleLogout}>Logout 🚪</button>
+    <div className="min-h-screen bg-gray-100">
+
+      {/* Welcome */}
+
+      <div className="px-6 pt-6">
+
+        <h1 className="text-3xl font-bold">
+          Welcome 🎉
+        </h1>
+
+        <p className="text-gray-600 mt-1">
+          {user}
+        </p>
+
       </div>
+
+
+      {/* Complaint Form */}
+
+      <ComplaintForm />
+
     </div>
+
   );
 }

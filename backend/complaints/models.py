@@ -1,5 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import User
+from app.models import Auth
+
 
 STATUS_CHOICES = [
     ("pending", "Pending"),
@@ -11,7 +12,7 @@ STATUS_CHOICES = [
 
 class Complaint(models.Model):
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(Auth, on_delete=models.CASCADE)
 
     title = models.CharField(max_length=200)
 
