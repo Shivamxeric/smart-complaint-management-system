@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./style.css";
 import { toast } from "react-toastify";
+import { API_BASE_URL } from "../constants/api";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -42,7 +43,8 @@ export default function Register() {
     try {
       setLoading(true);
 
-      const res = await fetch("http://127.0.0.1:8000/register/", {
+      const res = await fetch(`${API_BASE_URL}/register/`, {
+        
         method: "POST",
         headers: {
           "Content-Type": "application/json",

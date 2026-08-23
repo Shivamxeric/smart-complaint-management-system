@@ -4,6 +4,8 @@ import "./style.css";
 import { toast } from "react-toastify";
 import { GoogleLogin } from "@react-oauth/google";
 
+import { API_BASE_URL } from "../constants/api";
+
 export default function Login() {
   const navigate = useNavigate();
 
@@ -25,8 +27,8 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/login/", {
-        // const res = await fetch("https://auth-ye7t.onrender.com/login/", {
+      // const res = await fetch("http://127.0.0.1:8000/login/", {
+        const res = await fetch(`${API_BASE_URL}/login/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -64,10 +66,9 @@ export default function Login() {
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
       const res = await fetch(
-        "http://127.0.0.1:8000/google-login/",
+        // "http://127.0.0.1:8000/google-login/",
         // "https://auth-ye7t.onrender.com/google-login/",
-        
-        {
+        `${API_BASE_URL}/google-login/`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
