@@ -1,11 +1,8 @@
 import { useState } from "react";
 import { deleteComplaint } from "../../services/complaintService";
+import { toast } from "react-toastify";
 
-export default function ComplaintCard({
-  complaint,
-  onDeleted,
-}) {
-  const [expanded, setExpanded] = useState(false);
+export default function ComplaintCard({ complaint, onDeleted }) {
   const [deleting, setDeleting] = useState(false);
 
   const handleDelete = async () => {
@@ -18,128 +15,126 @@ export default function ComplaintCard({
     try {
       setDeleting(true);
 
-      const data = await deleteComplaint(complaint.id);
+      await deleteComplaint(complaint.id);
 
-      if (data.status === "success") {
-        onDeleted(complaint.id);
+      toast.success("Complaint deleted successfully");
+
+      if (onDeleted) {
+        onDeleted();
       }
     } catch (error) {
-      console.error("Delete complaint error:", error);
-
-      alert(
-        error.message ||
-          "Unable to delete complaint."
-      );
+      console.error(error);
+      toast.error(error.message || "Unable to delete complaint");
     } finally {
       setDeleting(false);
     }
   };
 
-  const description = complaint.description || "";
+  const statusConfig = {
+    pending: {
+      label: "Pending",
+      className: "bg-yellow-50 text-yellow-700 border-yellow-200",
+    },
+    in_progress: {
+      label: "In Progress",
+      className: "bg-blue-50 text-blue-700 border-blue-200",
+    },
+    resolved: {
+      label: "Resolved",
+      className: "bg-green-50 text-green-700 border-green-200",
+    },
+    rejected: {
+      label: "Rejected",
+      className: "bg-red-50 text-red-700 border-red-200",
+    },
+  };
+
+  const status =
+    statusConfig[complaint.status] || {
+      label: complaint.status || "Unknown",
+      className: "bg-gray-50 text-gray-600 border-gray-200",
+    };
 
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+    <article className="bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition overflow-hidden">
 
-      {/* Complaint content */}
-
+      {/* Top section */}
       <div className="p-5">
 
-        <div className="flex justify-between items-start gap-3">
+        <div className="flex items-start justify-between gap-4">
 
-          <div>
-            <h3 className="text-xl font-bold text-gray-800">
-              {complaint.title}
-            </h3>
+          <div className="min-w-0">
 
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs font-medium text-gray-400 mb-1">
               Complaint #{complaint.id}
             </p>
+
+            <h2 className="text-lg font-bold text-gray-800 break-words">
+              {complaint.title}
+            </h2>
+
           </div>
 
-          {/* Delete */}
-
-          <button
-            onClick={handleDelete}
-            disabled={deleting}
-            className="text-red-500 hover:text-red-700 text-lg disabled:opacity-50"
-            title="Delete complaint"
-          >
-            {deleting ? "..." : "🗑️"}
-          </button>
-
-        </div>
-
-        {/* Description */}
-
-        <div className="mt-4 text-gray-600">
-
-          <p>
-            {expanded
-              ? description
-              : description.length > 120
-              ? `${description.slice(0, 120)}...`
-              : description}
-          </p>
-
-          {description.length > 120 && (
-            <button
-              onClick={() =>
-                setExpanded((previous) => !previous)
-              }
-              className="text-blue-600 hover:text-blue-800 text-sm mt-2"
-            >
-              {expanded
-                ? "Show Less"
-                : "Read More"}
-            </button>
-          )}
-
-        </div>
-
-        {/* Status */}
-
-        <div className="mt-4">
-
           <span
-            className={`
-              inline-block
-              px-3
-              py-1
-              rounded-full
-              text-sm
-              font-medium
-              ${
-                complaint.status === "pending"
-                  ? "bg-yellow-100 text-yellow-700"
-                  : complaint.status === "in_progress"
-                  ? "bg-blue-100 text-blue-700"
-                  : complaint.status === "resolved"
-                  ? "bg-green-100 text-green-700"
-                  : "bg-red-100 text-red-700"
-              }
-            `}
+            className={`flex-shrink-0 px-3 py-1.5 rounded-full border text-xs font-semibold ${status.className}`}
           >
-            {complaint.status
-              ?.replace("_", " ")
-              .replace(/\b\w/g, (letter) =>
-                letter.toUpperCase()
-              )}
+            {status.label}
           </span>
 
         </div>
 
-        {/* Date */}
-
-        {complaint.created_at && (
-          <p className="text-xs text-gray-400 mt-3">
-            {new Date(
-              complaint.created_at
-            ).toLocaleString()}
+        {/* Description */}
+        <div className="mt-4">
+          <p className="text-sm text-gray-600 leading-6 break-words">
+            {complaint.description}
           </p>
+        </div>
+
+        {/* Image */}
+        {complaint.image && (
+          <div className="mt-4">
+            <img
+              src={complaint.image}
+              alt="Complaint"
+              className="w-full max-h-64 object-cover rounded-xl border border-gray-100"
+            />
+          </div>
         )}
 
       </div>
 
-    </div>
+      {/* Bottom section */}
+      <div className="px-5 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between gap-4">
+
+        <div>
+          <p className="text-xs text-gray-400">
+            Submitted
+          </p>
+
+          <p className="text-sm font-medium text-gray-600 mt-0.5">
+            {complaint.created_at
+              ? new Date(complaint.created_at).toLocaleDateString(
+                  "en-IN",
+                  {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  }
+                )
+              : "—"}
+          </p>
+        </div>
+
+        <button
+          onClick={handleDelete}
+          disabled={deleting}
+          className="px-4 py-2 rounded-lg border border-red-200 text-red-600 bg-white text-sm font-semibold hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+        >
+          {deleting ? "Deleting..." : "Delete"}
+        </button>
+
+      </div>
+
+    </article>
   );
 }

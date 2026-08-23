@@ -177,17 +177,17 @@ export default function ComplaintForm({ onComplaintCreated }) {
       </form>
 
       {/* How To Submit */}
-
+{/* 
       <button
         className="fixed bottom-4 mb-11 right-4 bg-green-600 text-white px-4 py-2 rounded-full hover:bg-green-700"
         onClick={() => setShowPreview(true)}
       >
         How to submit Complaint
-      </button>
+      </button> */}
 
       {/* Help Modal */}
 
-      {showPreview && (
+      {/* {showPreview && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50">
 
           <div className="relative w-3/4 h-3/4 bg-white rounded-lg overflow-hidden">
@@ -208,7 +208,7 @@ export default function ComplaintForm({ onComplaintCreated }) {
           </div>
 
         </div>
-      )}
+      )} */}
 
     </div>
   );

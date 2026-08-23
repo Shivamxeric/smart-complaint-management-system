@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./style.css";
+import { toast } from "react-toastify";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -11,55 +12,116 @@ export default function Register() {
     password: "",
   });
 
-  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // const res = await fetch("http://127.0.0.1:8000/register/", {
-    const res = await fetch("https://auth-ye7t.onrender.com/register/", {
-      
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(form),
-    });
+    if (!form.username.trim()) {
+      toast.error("Please enter username");
+      return;
+    }
 
-    const data = await res.json();
-    setMessage(data.message);
+    if (!form.email.trim()) {
+      toast.error("Please enter email");
+      return;
+    }
 
-    if (data.status === "success") {
-      setTimeout(() => navigate("/"), 1000);
+    if (!form.password) {
+      toast.error("Please enter password");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const res = await fetch("http://127.0.0.1:8000/register/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
+
+      const data = await res.json();
+
+      if (data.status === "success") {
+        toast.success("Account created successfully 🎉");
+
+        setTimeout(() => {
+          navigate("/");
+        }, 1000);
+      } else {
+        toast.error(data.message || "Registration failed");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Server Error");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="bg fun">
       <div className="card glow">
-        <h2>Create Account ✨😎</h2>
+
+        <h2>Create Account ✨</h2>
+
+        <p className="text-sm text-gray-500 mb-5">
+          Create your SCMS account to submit and track complaints.
+        </p>
 
         <form onSubmit={handleSubmit}>
-          <input name="username" placeholder="👤 Username" onChange={handleChange} />
-          <input name="email" placeholder="📧 Email" onChange={handleChange} />
+
+          <input
+            name="username"
+            placeholder="👤 Username"
+            value={form.username}
+            onChange={handleChange}
+            disabled={loading}
+          />
+
+          <input
+            name="email"
+            type="email"
+            placeholder="📧 Email"
+            value={form.email}
+            onChange={handleChange}
+            disabled={loading}
+          />
+
           <input
             name="password"
             type="password"
             placeholder="🔐 Password"
+            value={form.password}
             onChange={handleChange}
+            disabled={loading}
           />
-          <button>Join Now 🎉</button>
+
+          <button type="submit" disabled={loading}>
+            {loading ? "Creating Account..." : "Join Now 🎉"}
+          </button>
+
         </form>
 
-        <p className="msg">{message}</p>
+        <div className="mt-4">
+          <span
+            className="cursor-pointer"
+            onClick={() => navigate("/")}
+          >
+            Already user? Login 🔐
+          </span>
+        </div>
 
-        <span onClick={() => navigate("/")}>
-          Already user? Login 🔐
-        </span>
       </div>
     </div>
   );

@@ -1,62 +1,75 @@
 import { NavLink } from "react-router-dom";
 
 export default function Sidebar() {
-
   const linkClass = ({ isActive }) =>
-    `flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium ${
+    `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition ${
       isActive
-        ? "bg-blue-600 text-white shadow"
+        ? "bg-blue-600 text-white shadow-sm"
         : "text-gray-600 hover:bg-blue-50 hover:text-blue-600"
     }`;
 
   return (
-    <aside className="hidden md:block w-64 min-h-[calc(100vh-64px)] bg-white border-r">
+    <aside className="hidden md:flex w-64 flex-shrink-0 bg-white border-r border-gray-200 min-h-[calc(100vh-64px)]">
 
-      <div className="p-4">
+      <div className="w-full p-5">
 
-        <p className="text-xs uppercase tracking-wider text-gray-400 font-semibold mb-3">
-          Menu
-        </p>
+        {/* Menu title */}
+        <div className="mb-4 px-2">
+          <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+            Main Menu
+          </p>
+        </div>
 
+        {/* Navigation */}
         <nav className="space-y-2">
 
           <NavLink
             to="/home"
             className={linkClass}
           >
-            <span>🏠</span>
-            <span>Home</span>
-          </NavLink>
+            <span className="w-6 text-center text-lg">
+              🏠
+            </span>
 
+            <span>
+              Home
+            </span>
+          </NavLink>
 
           <NavLink
             to="/complaints"
             className={linkClass}
           >
-            <span>📋</span>
-            <span>My Complaints</span>
+            <span className="w-6 text-center text-lg">
+              📋
+            </span>
+
+            <span>
+              My Complaints
+            </span>
           </NavLink>
 
         </nav>
 
 
-        <div className="mt-8 pt-6 border-t">
+        {/* Bottom information */}
+        <div className="mt-8 pt-6 border-t border-gray-100">
 
-          <p className="text-xs uppercase tracking-wider text-gray-400 font-semibold mb-3">
-            Support
-          </p>
+          <div className="bg-blue-50 rounded-xl p-4">
 
-          <button
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition"
-            onClick={() =>
-              alert(
-                "For help, please contact the support team."
-              )
-            }
-          >
-            <span>❓</span>
-            <span>Help & Support</span>
-          </button>
+            <div className="text-lg mb-2">
+              💡
+            </div>
+
+            <h3 className="text-sm font-semibold text-gray-800">
+              Need help?
+            </h3>
+
+            <p className="text-xs text-gray-500 mt-1 leading-5">
+              Submit your complaint and track its status from your complaints page.
+            </p>
+
+          </div>
 
         </div>
 

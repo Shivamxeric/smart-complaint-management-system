@@ -49,7 +49,7 @@ export default function Login() {
 
         setTimeout(() => {
           navigate("/home");
-        }, 1500);
+        }, 500);
       } else {
         toast.error(data.message || "Login Failed");
       }
@@ -64,8 +64,8 @@ export default function Login() {
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
       const res = await fetch(
-        // "http://127.0.0.1:8000/google-login/",
-        "https://auth-ye7t.onrender.com/google-login/",
+        "http://127.0.0.1:8000/google-login/",
+        // "https://auth-ye7t.onrender.com/google-login/",
         
         {
           method: "POST",
