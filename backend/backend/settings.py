@@ -151,12 +151,12 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 CSRF_TRUSTED_ORIGINS = [
     # "http://localhost:5173",
-    "https://complaintx.vercel.app",
+    "https://xcomplain.vercel.app/",
 
 
 
 ]
 CORS_ALLOWED_ORIGINS = [
-    "https://complaintx.vercel.app",
+    "https://xcomplain.vercel.app/",
     
 ]
