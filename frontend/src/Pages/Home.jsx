@@ -18,6 +18,34 @@ export default function Home() {
   setUser("Manage and track your complaints easily.");
 }, [navigate]);
 
+// useEffect(() => {
+//   const handleAdminShortcut = (e) => {
+//     if (
+//       e.ctrlKey &&
+//       e.altKey &&
+//       e.key.toLowerCase() === "a"
+//     ) {
+//       e.preventDefault();
+
+//       sessionStorage.setItem("adminShortcut", "true");
+//       navigate("/admin-login");
+//     }
+//   };
+
+//   window.addEventListener("keydown", handleAdminShortcut);
+
+//   return () => {
+//     window.removeEventListener("keydown", handleAdminShortcut);
+//   };
+// }, [navigate]);
+
+//   window.addEventListener("keydown", handleAdminShortcut);
+
+//   return () => {
+//     window.removeEventListener("keydown", handleAdminShortcut);
+//   };
+// }, [navigate]);
+
   return (
     <div className="min-h-screen bg-gray-100">
 

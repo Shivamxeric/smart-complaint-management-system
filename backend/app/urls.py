@@ -24,4 +24,5 @@ urlpatterns = [
     path('logout/', views.logout, name='logout'),
     path('home/', views.home, name='home'),
     path("google-login/", views.google_login),
+    path("admin-login/", views.admin_login),
 ]

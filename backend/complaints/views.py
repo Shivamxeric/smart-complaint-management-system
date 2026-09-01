@@ -2,6 +2,9 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import AccessToken
+import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 from app.models import Auth
 from .models import Complaint
@@ -123,3 +126,87 @@ def delete_complaint(request, complaint_id):
             "message": "Complaint deleted successfully"
         }
     )
+
+
+@csrf_exempt
+def admin_complaints(request):
+    try:
+        auth_header = request.headers.get("Authorization")
+
+        if not auth_header:
+            return JsonResponse({
+                "status": "failed",
+                "message": "No token provided"
+            }, status=401)
+
+        token = auth_header.split(" ")[1]
+        decoded = AccessToken(token)
+
+        user_id = decoded["user_id"]
+        user = Auth.objects.get(id=user_id)
+
+        if not user.is_admin:
+            return JsonResponse({
+                "status": "failed",
+                "message": "Admin access required"
+            }, status=403)
+
+        # GET → all complaints
+        if request.method == "GET":
+
+            complaints = Complaint.objects.all().order_by("-id")
+
+            serializer = ComplaintSerializer(
+                complaints,
+                many=True
+            )
+
+            return JsonResponse({
+                "status": "success",
+                "complaints": serializer.data
+            })
+
+        # PATCH → change status
+        if request.method == "PATCH":
+
+            data = json.loads(request.body)
+
+            complaint_id = data.get("complaint_id")
+            new_status = data.get("status")
+
+            allowed_status = [
+                "pending",
+                "in_progress",
+                "resolved",
+                "rejected"
+            ]
+
+            if new_status not in allowed_status:
+                return JsonResponse({
+                    "status": "failed",
+                    "message": "Invalid status"
+                }, status=400)
+
+            complaint = Complaint.objects.get(
+                id=complaint_id
+            )
+
+            complaint.status = new_status
+            complaint.save()
+
+            return JsonResponse({
+                "status": "success",
+                "message": "Complaint status updated"
+            })
+
+    except Complaint.DoesNotExist:
+        return JsonResponse({
+            "status": "failed",
+            "message": "Complaint not found"
+        }, status=404)
+
+    except Exception as e:
+        return JsonResponse({
+            "status": "failed",
+            "message": str(e)
+        }, status=500)

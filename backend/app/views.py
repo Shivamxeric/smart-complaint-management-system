@@ -1,5 +1,8 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.decorators import api_view
 from .models import Auth
 import json
 from google.oauth2 import id_token
@@ -192,3 +195,33 @@ def google_login(request):
             "status": "failed",
             "message": str(e)
         })
+
+
+@api_view(["POST"])
+def admin_login(request):
+
+    admin_id = request.data.get("admin_id")
+    password = request.data.get("password")
+
+    try:
+        user = Auth.objects.get(
+            username=admin_id,
+            password=password,
+            is_admin=True
+        )
+    except Auth.DoesNotExist:
+        return Response(
+            {
+                "status": "failed",
+                "message": "Invalid admian credentials"
+            },
+            status=status.HTTP_401_UNAUTHORIZED
+        )
+
+    token = AccessToken.for_user(user)
+
+    return Response({
+        "status": "success",
+        "message": "Admin login successful",
+        "token": str(token),
+    })
